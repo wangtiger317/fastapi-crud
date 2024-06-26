@@ -1,7 +1,7 @@
 from uuid import UUID, uuid4
-from fastapi import FastAPI, HTTPException
-from typing import List
-from models import User,Roles,Gender,UserUpdateRequest
+from fastapi import Body, FastAPI, HTTPException
+from typing import Annotated, List
+from models import User,Roles,Gender,UserUpdateRequest,Item
 
 app = FastAPI()
 
@@ -67,3 +67,20 @@ async def delete_user(id:UUID):
             detail =f"{id} not found"
         )
 
+# update item
+@app.put("/api/v1/items/{item_id}")
+async def update_item(
+    *,
+    item_id:int,
+    item:Item,
+    importance: Annotated[int, Body(gt=0)],
+    q: str | None = None
+):
+    results ={
+        "item_id":item_id,
+        "item":item,
+        "importance":importance
+    }
+    if q:
+        results.update({"q":q})
+    return results
